@@ -295,7 +295,9 @@ def display():
     glPushMatrix()
     glTranslatef(state.x, state.y, state.z)
     glRotatef(state.yaw, 0, 1, 0)
-    glRotatef(state.pitch, 1, 0, 0)
+    # Keep render orientation consistent with physics sign convention:
+    # positive pitch means nose up.
+    glRotatef(-state.pitch, 1, 0, 0)
     glRotatef(state.roll, 0, 0, -1)
     draw_aircraft_model()
     glPopMatrix()
