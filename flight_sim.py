@@ -50,6 +50,7 @@ STALL_SPEED = 28.0
 MAX_ROLL_RATE = 55.0   # deg/s
 MAX_PITCH_RATE = 35.0  # deg/s
 MAX_YAW_RATE = 25.0    # deg/s
+TRIM_THROTTLE = 0.38
 
 
 # ---------- utility ----------
@@ -221,10 +222,15 @@ def draw_hud():
 
 def handle_controls(dt):
     # Up/Down arrows = accelerate/decelerate throttle command
+    # Up/Down are treated as active acceleration/deceleration commands.
+    # When released, throttle smoothly returns toward a trim value so
+    # speed tends to stabilize instead of drifting forever.
     if GLUT_KEY_UP in special_keys:
         state.throttle += 0.70 * dt
-    if GLUT_KEY_DOWN in special_keys:
+    elif GLUT_KEY_DOWN in special_keys:
         state.throttle -= 0.70 * dt
+    else:
+        state.throttle += (TRIM_THROTTLE - state.throttle) * min(1.0, 1.8 * dt)
     state.throttle = clamp(state.throttle, -0.2, 1.0)
 
     # Left/Right arrows = roll
