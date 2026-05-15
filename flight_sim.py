@@ -7,6 +7,8 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 
+HUD_FONT = globals().get("GLUT_BITMAP_9_BY_15") or globals().get("GLUT_BITMAP_HELVETICA_12")
+
 WINDOW_W = 1280
 WINDOW_H = 720
 
@@ -187,7 +189,8 @@ def draw_hud():
     glColor3f(1.0, 1.0, 1.0)
     glRasterPos2f(15, WINDOW_H - 24)
     for ch in text:
-        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(ch))
+        if HUD_FONT is not None:
+            glutBitmapCharacter(HUD_FONT, ord(ch))
 
     glEnable(GL_DEPTH_TEST)
     glPopMatrix()
