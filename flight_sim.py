@@ -76,6 +76,25 @@ def forward_vector(pitch_deg, yaw_deg):
     )
 
 
+def vec_cross(a, b):
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def vec_length(v):
+    return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+
+
+def vec_normalize(v):
+    n = vec_length(v)
+    if n < 1e-8:
+        return (0.0, 1.0, 0.0)
+    return (v[0] / n, v[1] / n, v[2] / n)
+
+
 # ---------- terrain ----------
 def terrain_height(x, z):
     # Simple procedural hills
@@ -280,15 +299,21 @@ def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
-    # chase camera behind aircraft
+    # chase camera: behind aircraft forward axis + local-up offset,
+    # so vertical view motion remains consistent with aircraft pitch.
     fx, fy, fz = forward_vector(state.pitch, state.yaw)
+    forward = vec_normalize((fx, fy, fz))
+    world_up = (0.0, 1.0, 0.0)
+    right = vec_normalize(vec_cross(forward, world_up))
+    up = vec_normalize(vec_cross(right, forward))
+
     cam_dist = 85.0
     cam_h = 24.0
-    cx = state.x - fx * cam_dist
-    cy = state.y + cam_h
-    cz = state.z - fz * cam_dist
+    cx = state.x - forward[0] * cam_dist + up[0] * cam_h
+    cy = state.y - forward[1] * cam_dist + up[1] * cam_h
+    cz = state.z - forward[2] * cam_dist + up[2] * cam_h
 
-    gluLookAt(cx, cy, cz, state.x, state.y, state.z, 0.0, 1.0, 0.0)
+    gluLookAt(cx, cy, cz, state.x, state.y, state.z, up[0], up[1], up[2])
 
     draw_terrain()
 
