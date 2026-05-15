@@ -234,12 +234,12 @@ def handle_controls(dt):
     if GLUT_KEY_RIGHT in special_keys:
         state.roll_rate_cmd = -MAX_ROLL_RATE
 
-    # PgUp=nose down, PgDn=nose up
+    # PgUp=nose up, PgDn=nose down
     state.pitch_rate_cmd = 0.0
     if GLUT_KEY_PAGE_UP in special_keys:
-        state.pitch_rate_cmd = MAX_PITCH_RATE
-    if GLUT_KEY_PAGE_DOWN in special_keys:
         state.pitch_rate_cmd = -MAX_PITCH_RATE
+    if GLUT_KEY_PAGE_DOWN in special_keys:
+        state.pitch_rate_cmd = MAX_PITCH_RATE
 
     # A / D = yaw left / right
     state.yaw_rate_cmd = 0.0
